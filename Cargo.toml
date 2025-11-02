@@ -1,0 +1,73 @@
+[package]
+name = "shared-nothing"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name"]
+description = "High-performance shared-nothing architecture library for Rust"
+license = "MIT-0"
+repository = "https://github.com/pyralog/shared-nothing"
+keywords = ["concurrency", "actor", "shared-nothing", "distributed", "performance"]
+categories = ["concurrency", "asynchronous"]
+
+[dependencies]
+# Core async runtime
+tokio = { version = "1.40", features = ["full"] }
+
+# High-performance channels
+crossbeam = "0.8"
+flume = "0.11"
+
+# Serialization (optional, for network communication)
+serde = { version = "1.0", features = ["derive"], optional = true }
+bincode = { version = "1.3", optional = true }
+
+# Hashing for partitioning
+ahash = "0.8"
+xxhash-rust = { version = "0.8", features = ["xxh3"] }
+
+# CPU pinning and affinity
+core_affinity = "0.8"
+
+# Utilities
+parking_lot = "0.12"
+once_cell = "1.19"
+thiserror = "1.0"
+num_cpus = "1.16"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+proptest = "1.4"
+rand = "0.8"
+
+[features]
+default = ["serialization"]
+serialization = ["serde", "bincode"]
+
+[[bench]]
+name = "message_passing"
+harness = false
+
+[[bench]]
+name = "worker_pool"
+harness = false
+
+[[example]]
+name = "basic_worker"
+path = "examples/basic_worker.rs"
+
+[[example]]
+name = "data_processing"
+path = "examples/data_processing.rs"
+
+[[example]]
+name = "distributed_compute"
+path = "examples/distributed_compute.rs"
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3
+
+[profile.bench]
+inherits = "release"
+
